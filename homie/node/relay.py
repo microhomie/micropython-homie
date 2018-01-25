@@ -23,7 +23,7 @@ while True:
 
 from machine import Pin
 
-from . import HomieNode
+from . import HomieNode, Property
 
 
 ONOFF = {b'off': 0, b'on': 1, 0: b'off', 1: b'on'}
@@ -55,18 +55,18 @@ class Relay(HomieNode):
         relais = len(self.relais)
         properties_str = 'relay[1-{}]'.format(relais).encode()
         properties = [
-            (b'relay/$type', b'relay'),
-            (b'relay/$properties', properties_str),
+            Property(b'relay/$type', b'relay', True),
+            Property(b'relay/$properties', properties_str, True),
         ]
 
         for relay in range(relais):
             name = 'Relay {}'.format(relay + 1).encode()
             prop = 'relay/relay_{}'.format(relay + 1).encode()
             attributes = [
-                (prop + b'/$settable', b'true'),
-                (prop + b'/$name', name),
-                (prop + b'/$datatype', b'string'),
-                (prop + b'/$format', b'on,off')
+                Property(prop + b'/$settable', b'true', True),
+                Property(prop + b'/$name', name, True),
+                Property(prop + b'/$datatype', b'string', True),
+                Property(prop + b'/$format', b'on,off', True)
             ]
             properties.extend(attributes)
 
@@ -92,6 +92,7 @@ class Relay(HomieNode):
         data = []
         for relay in range(len(self.relais)):
             topic = 'relay/relay_{}'.format(relay + 1).encode()
-            data.append((topic, self.onoff[self.relais[relay].value()]))
+            data.append(
+                Property(topic, self.onoff[self.relais[relay].value()], True))
 
         return data

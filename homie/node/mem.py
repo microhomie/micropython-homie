@@ -1,6 +1,6 @@
 import gc
 
-from . import HomieNode
+from . import HomieNode, Property
 
 
 class Mem(HomieNode):
@@ -21,6 +21,6 @@ class Mem(HomieNode):
 
     def get_data(self):
         return (
-            (b'$stats/mem/free', self.free),
-            (b'$stats/mem/alloc', self.alloc)
+            Property(b'$stats/mem/free', self.free, True),
+            Property(b'$stats/mem/alloc', self.alloc, True)
         )

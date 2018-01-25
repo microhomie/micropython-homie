@@ -1,6 +1,6 @@
 from machine import Pin
 
-from . import HomieNode
+from . import HomieNode, Property
 
 
 class PIR(HomieNode):
@@ -18,11 +18,11 @@ class PIR(HomieNode):
 
     def get_properties(self):
         return (
-            (b'pir/$type', b'pir'),
-            (b'pir/$properties', b'motion'),
-            (b'pir/motion/$settable', b'false'),
-            (b'pir/motion/$datatype', b'boolean'),
-            (b'pir/motion/$format', b'true,false')
+            Property(b'pir/$type', b'pir', True),
+            Property(b'pir/$properties', b'motion', True),
+            Property(b'pir/motion/$settable', b'false', True),
+            Property(b'pir/motion/$datatype', b'boolean', True),
+            Property(b'pir/motion/$format', b'true,false', True)
         )
 
     def has_update(self):
@@ -34,4 +34,4 @@ class PIR(HomieNode):
 
     def get_data(self):
         payload = 'true' if self.last_pir_state == 1 else 'false'
-        return ((b'pir/motion', payload),)
+        return (Property(b'pir/motion', payload, True),)

@@ -4,7 +4,7 @@ Reed switch door example
 
 from machine import Pin
 
-from . import HomieNode
+from . import HomieNode, Property
 
 
 class Reed(HomieNode):
@@ -26,12 +26,12 @@ class Reed(HomieNode):
 
     def get_properties(self):
         return (
-            (b'door/$type', b'door'),
-            (b'door/$properties', b'open'),
-            (b'door/open/$settable', b'false'),
-            (b'door/open/$name', b'door'),
-            (b'door/open/$datatype', b'boolean'),
-            (b'door/open/$format', b'true,false')
+            Property(b'door/$type', b'door', True),
+            Property(b'door/$properties', b'open', True),
+            Property(b'door/open/$settable', b'false', True),
+            Property(b'door/open/$name', b'door', True),
+            Property(b'door/open/$datatype', b'boolean', True),
+            Property(b'door/open/$format', b'true,false', True)
         )
 
     def has_update(self):
@@ -42,4 +42,4 @@ class Reed(HomieNode):
         return False
 
     def get_data(self):
-        return ((b'door/open', self.is_open()),)
+        return (Property(b'door/open', self.is_open(), True),)

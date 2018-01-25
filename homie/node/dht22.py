@@ -24,7 +24,7 @@ import dht
 
 from machine import Pin
 
-from . import HomieNode
+from . import HomieNode, Property
 
 
 class DHT22(HomieNode):
@@ -45,19 +45,19 @@ class DHT22(HomieNode):
     def get_properties(self):
         return (
             # temperature
-            (b'temperature/$type', b'temperature'),
-            (b'temperature/$properties', b'degrees'),
-            (b'temperature/degrees/$settable', b'false'),
-            (b'temperature/degrees/$unit', b'°C'),
-            (b'temperature/degrees/$datatype', b'float'),
-            (b'temperature/degrees/$format', b'20.0:60'),
+            Property(b'temperature/$type', b'temperature', True),
+            Property(b'temperature/$properties', b'degrees', True),
+            Property(b'temperature/degrees/$settable', b'false', True),
+            Property(b'temperature/degrees/$unit', b'°C', True),
+            Property(b'temperature/degrees/$datatype', b'float', True),
+            Property(b'temperature/degrees/$format', b'20.0:60', True),
             # humidity
-            (b'humidity/$type', b'humidity'),
-            (b'humidity/$properties', b'percentage'),
-            (b'humidity/percentage/$settable', b'false'),
-            (b'humidity/percentage/$unit', b'%'),
-            (b'humidity/percentage/$datatype', b'float'),
-            (b'humidity/percentage/$format', b'0:100'),
+            Property(b'humidity/$type', b'humidity', True),
+            Property(b'humidity/$properties', b'percentage', True),
+            Property(b'humidity/percentage/$settable', b'false', True),
+            Property(b'humidity/percentage/$unit', b'%', True),
+            Property(b'humidity/percentage/$datatype', b'float', True),
+            Property(b'humidity/percentage/$format', b'0:100', True),
         )
 
     def update_data(self):
@@ -67,6 +67,6 @@ class DHT22(HomieNode):
 
     def get_data(self):
         return (
-            (b'temperature/degrees', self.temperature),
-            (b'humidity/percentage', self.humidity)
+            Property(b'temperature/degrees', self.temperature, True),
+            Property(b'humidity/percentage', self.humidity, True)
         )

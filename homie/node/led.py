@@ -1,6 +1,6 @@
 from machine import Pin
 
-from . import HomieNode
+from . import HomieNode, Property
 
 
 ONOFF = {b'off': 0, b'on': 1, 0: b'off', 1: b'on'}
@@ -22,12 +22,12 @@ class LED(HomieNode):
 
     def get_properties(self):
         return (
-            (b'led/$type', b'led'),
-            (b'led/$properties', b'power'),
-            (b'led/power/$settable', b'true'),
-            (b'led/power/$name', b'LED'),
-            (b'led/power/$datatype', b'string'),
-            (b'led/power/$format', b'on,off')
+            Property(b'led/$type', b'led', True),
+            Property(b'led/$properties', b'power', True),
+            Property(b'led/power/$settable', b'true', True),
+            Property(b'led/power/$name', b'LED', True),
+            Property(b'led/power/$datatype', b'string', True),
+            Property(b'led/power/$format', b'on,off', True)
         )
 
     def callback(self, topic, message):
@@ -45,4 +45,4 @@ class LED(HomieNode):
         return False
 
     def get_data(self):
-        return ((b'led/power', ONOFF[self.led.value()]),)
+        return (Property(b'led/power', ONOFF[self.led.value()]),)
