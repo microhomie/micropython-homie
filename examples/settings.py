@@ -4,10 +4,6 @@ import network
 import ubinascii
 
 
-# MicroPython Homie implementation version
-__version__ = b'0.1.0'
-
-
 ###
 # MQTT settings
 ###
@@ -41,19 +37,17 @@ MQTT_BASE_TOPIC = b'homie'
 # Device settings
 ###
 
-# The device ID for registration at the broker
+# The device ID for registration at the broker. The device id is also the
+# base topic of a device and must be unique
 DEVICE_ID = ubinascii.hexlify(machine.unique_id())
 
-# Name seen in topic
+# Friendly name of the device
 DEVICE_NAME = b'mydevice'
 
 # Firmware name
 DEVICE_FW_NAME = b'uhomie'
 
-# Firmare version
-DEVICE_FW_VERSION = __version__
-
-# Local IP from the device
+# IP of the device on the local network
 DEVICE_LOCALIP = bytes(network.WLAN(0).ifconfig()[0], 'utf-8')
 
 # Device MAC address

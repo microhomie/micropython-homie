@@ -3,6 +3,9 @@ import utime
 from umqtt.simple import MQTTClient
 
 
+__version__ = b'0.1.0'
+
+
 class HomieDevice:
 
     """ MicroPython implementation of the homie v2 convention. """
@@ -106,8 +109,9 @@ class HomieDevice:
         properties = (
             (b'$homie', b'2.1.0', True),
             (b'$online', b'true', True),
+            (b'$name', self.settings.DEVICE_NAME, True),
             (b'$fw/name', self.settings.DEVICE_FW_NAME, True),
-            (b'$fw/version', self.settings.DEVICE_FW_VERSION, True),
+            (b'$fw/version', __version__, True),
             (b'$implementation', self.settings.DEVICE_PLATFORM, True),
             (b'$localip', self.settings.DEVICE_LOCALIP, True),
             (b'$mac', self.settings.DEVICE_MAC, True),
