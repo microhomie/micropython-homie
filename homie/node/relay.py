@@ -1,16 +1,12 @@
 """
 import utime
+import settings
 
 from homie.node.relay import Relay
 from homie import HomieDevice
 
-CONFIG = {
-    'mqtt': {
-        'broker': 'localhost',
-    }
-}
 
-homie = HomieDevice(CONFIG)
+homie = HomieDevice(settings)
 homie.add_node(Relay(pin=[2, 4]))
 
 homie.publish_properties()

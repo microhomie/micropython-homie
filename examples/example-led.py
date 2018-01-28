@@ -10,21 +10,12 @@ $ mosquitto_pub -t 'uhomie/esp8266/led/power/set' -m toggle
 """
 
 import utime
+import settings
 
 from homie.node.led import LED
 from homie import HomieDevice
 
-CONFIG = {
-    'mqtt': {
-        'broker': 'localhost',
-        'base_topic': b'uhomie'
-    },
-    'device': {
-        'id': b'esp8266',
-    }
-}
-
-homie = HomieDevice(CONFIG)
+homie = HomieDevice(settings)
 
 # Add LED node to device
 homie.add_node(LED(pin=2))

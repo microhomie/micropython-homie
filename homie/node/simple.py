@@ -1,16 +1,12 @@
 """
 import utime
+import settings
 
 from homie.node.simple import SimpleHomieNode
 from homie import HomieDevice
 
-CONFIG = {
-    'mqtt': {
-        'broker': 'localhost',
-    },
-}
 
-homie = HomieDevice(CONFIG)
+homie = HomieDevice(settings)
 
 n = SimpleHomieNode(node_type=b'dummy', node_property=b'value', interval=5)
 n.value = 17

@@ -1,8 +1,4 @@
-import sys
 import utime
-import machine
-import network
-import ubinascii
 
 from collections import namedtuple
 
@@ -10,31 +6,6 @@ from umqtt.simple import MQTTClient
 
 
 __version__ = b'0.1.0'
-
-
-# Default config
-CONFIG = {
-    'mqtt': {
-        'broker': '127.0.0.1',
-        'port': 0,
-        'user': None,
-        'pass': None,
-        'keepalive': 60,
-        'ssl': False,
-        'ssl_params': {},
-        'base_topic': b'homie'
-    },
-    'device': {
-        'id': ubinascii.hexlify(machine.unique_id()),
-        'name': b'mydevice',
-        'fwname': b'uhomie',
-        'fwversion': __version__,
-        'localip': bytes(network.WLAN(0).ifconfig()[0], 'utf-8'),
-        'mac': ubinascii.hexlify(network.WLAN(0).config('mac'), ':'),
-        'platform': bytes(sys.platform, 'utf-8'),
-        'stats_interval': 60
-    }
-}
 
 
 Property = namedtuple('Property', (
@@ -48,39 +19,34 @@ class HomieDevice:
 
     """ MicroPython implementation of the homie v2 convention. """
 
-    def __init__(self, cfg=None):
+    def __init__(self, settings):
+        self.settings = settings
+
         self.nodes = []
         self.node_ids = []
         self.topic_callbacks = {}
 
-        # update config
-        if cfg is not None:
-            if 'mqtt' in cfg:
-                CONFIG['mqtt'].update(cfg['mqtt'])
-            if 'device' in cfg:
-                CONFIG['device'].update(cfg['device'])
-
         self.start_time = utime.time()
         self.next_update = utime.time()
-        self.stats_interval = CONFIG['device']['stats_interval']
+        self.stats_interval = self.settings.DEVICE_STATS_INTERVAL
 
         # base topic
-        self.topic = b'/'.join((CONFIG['mqtt']['base_topic'],
-                               CONFIG['device']['id']))
+        self.topic = b'/'.join((self.settings.MQTT_BASE_TOPIC,
+                                self.settings.DEVICE_ID))
 
         self._umqtt_connect()
 
     def _umqtt_connect(self):
         # mqtt client
         self.mqtt = MQTTClient(
-            CONFIG['device']['id'],
-            CONFIG['mqtt']['broker'],
-            port=CONFIG['mqtt']['port'],
-            user=CONFIG['mqtt']['user'],
-            password=CONFIG['mqtt']['pass'],
-            keepalive=CONFIG['mqtt']['keepalive'],
-            ssl=CONFIG['mqtt']['ssl'],
-            ssl_params=CONFIG['mqtt']['ssl_params'])
+            self.settings.DEVICE_ID,
+            self.settings.MQTT_BROKER,
+            port=self.settings.MQTT_PORT,
+            user=self.settings.MQTT_USERNAME,
+            password=self.settings.MQTT_PASSWORD,
+            keepalive=self.settings.MQTT_KEEPALIVE,
+            ssl=self.settings.MQTT_SSL,
+            ssl_params=self.settings.MQTT_SSL_PARAMS)
 
         # set callback
         self.mqtt.set_callback(self.sub_cb)
@@ -152,11 +118,12 @@ class HomieDevice:
         properties = (
             Property(b'$homie', b'2.1.0', True),
             Property(b'$online', b'true', True),
-            Property(b'$fw/name', CONFIG['device']['fwname'], True),
-            Property(b'$fw/version', CONFIG['device']['fwversion'], True),
-            Property(b'$implementation', CONFIG['device']['platform'], True),
-            Property(b'$localip', CONFIG['device']['localip'], True),
-            Property(b'$mac', CONFIG['device']['mac'], True),
+            Property(b'$name', self.settings.DEVICE_NAME, True),
+            Property(b'$fw/name', self.settings.DEVICE_FW_NAME, True),
+            Property(b'$fw/version', __version__, True),
+            Property(b'$implementation', self.settings.DEVICE_PLATFORM, True),
+            Property(b'$localip', self.settings.DEVICE_LOCALIP, True),
+            Property(b'$mac', self.settings.DEVICE_MAC, True),
             Property(b'$stats/interval', self.stats_interval, True),
             Property(b'$nodes', b','.join(self.node_ids), True)
         )

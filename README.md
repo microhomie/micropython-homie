@@ -5,65 +5,46 @@ MicroPython implementation of the [Homie v2](https://github.com/marvinroger/homi
 This project is in alpha stage.
 
 
-## Device setup
+## Install
 
-Create a directory `homie` on your device and copy the file `__init__.py` from the `homie` directory. From the `repl` you can now setup your homie device:
+For now you have to install MicroHomie by hand. We will provide PyPi packages on beta stage.
 
-```
->>> from homie import HomieDevice
->>> CONFIG = {'mqtt': {'broker': 'localhost'}}
->>> homie = HomieDevice(CONFIG)
-```
+To copy MicroHomie to your device use your favorite MicroPython remote shell like [rshell](https://github.com/dhylands/rshell), [mpfshell](https://github.com/wendlers/mpfshell) or [ampy](https://github.com/adafruit/ampy).
 
-When your device is setup you start publishing the device and later node properties:
+Create a directory `homie` on your device and copy the file `__init__.py` from the `homie` directory. Then create a `node` directory in `homie` and copy `__init__.py`, `led.py`, `simple.py` from the `homie/node` directory to the device.
+
+Your file system structure should now look similar like this:
 
 ```
-homie.publish_properties()
+├── homie
+│   ├── __init__.py
+│   ├── node
+│   │   ├── __init__.py
+│   │   ├── led.py
+│   │   ├── simple.py
+├── boot.py
+├── main.py
 ```
 
-From now on you have to setup a loop to continuous publish device and node data:
+## Configuration
 
-```
->>> import utime
->>> while True:
-...     homie.publish_data()
-...     utime.sleep(1)
-```
+MicroHomie use a `settings.py` file to configure the device. An example `settings.py` file is in the example directory. Modify this file for your needs and copy it to your device root directory.
 
-If you also listen to topics you have to check for new messages:
+## ESP8266 example device
 
-```
-homie.mqtt.check_msg()
-```
+In this example we use the on-board LED from the ESP8266. Copy the `example-led.py` file from the `examples` diretory to your device and rename it to `main.py`.
 
+You can now connect a MQTT client to your MQTT Broker an listen to the `homie/#` topic, or whatever you set as base topic.
 
-### Device configuration
+Reset your ESP8266 and watch incoming MQTT messages.
 
-Device class is configured with an dictionary. Default device configuration:
+The on-board LED status is reversed to the pin status. On start the on-board
+LED is on. To turn it off send 'on' or 'toggle' via MQTT. Replace `<DEVICEID>` with the ID from the MQTT topic:
 
-```python
-CONFIG = {
-    'mqtt': {
-        'broker': '127.0.0.1',
-        'port': 0,
-        'user': None,
-        'pass': None,
-        'keepalive': 60,
-        'ssl': False,
-        'ssl_params': {},
-        'base_topic': b'homie'
-    },
-    'device': {
-        'id': ubinascii.hexlify(machine.unique_id()),
-        'name': b'mydevice',
-        'fwname': b'uhomie',
-        'fwversion': __version__,
-        'localip': bytes(network.WLAN(0).ifconfig()[0], 'utf-8'),
-        'mac': ubinascii.hexlify(network.WLAN(0).config('mac'), ':'),
-        'platform': bytes(sys.platform, 'utf-8'),
-        'stats_interval': 60
-    }
-}
+```shell
+$ mosquitto_pub -t 'homie/<DEVICEID>/led/power/set' -m on
+$ mosquitto_pub -t 'homie/<DEVICEID>/led/power/set' -m off
+$ mosquitto_pub -t 'homie/<DEVICEID>/led/power/set' -m toggle
 ```
 
 
