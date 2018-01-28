@@ -1,7 +1,7 @@
 import utime
 
 
-class HomieNode:
+class HomieNode(object):
 
     def __init__(self, interval=60):
         self.update_interval = interval

@@ -26,7 +26,7 @@ from . import HomieNode
 class DHT22(HomieNode):
 
     def __init__(self, pin=4, interval=60):
-        super().__init__(interval=interval)
+        super(DHT22, self).__init__(interval=interval)
         self.dht22 = dht.DHT22(Pin(pin))
         self.temperature = 0
         self.humidity = 0
