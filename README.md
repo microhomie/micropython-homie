@@ -28,7 +28,7 @@ Your file system structure should now look similar like this:
 
 ## Configuration
 
-MicroHomie use a `settings.py` file to configure the device. An example `settings.py` file is in the example directory. Modify this file for your needs and copy it to your device root directory.
+MicroHomie use a `settings.py` file to configure the device. See `settings.example.py` as an example. Modify this file for your needs and copy it to your device root directory as `settings.py`.
 
 ## ESP8266 example device
 
