@@ -10,9 +10,15 @@ This project is in alpha stage.
 For now you have to install MicroHomie by hand. We will provide PyPi packages on beta stage.
 
 To copy MicroHomie to your device use your favorite MicroPython remote shell like [rshell](https://github.com/dhylands/rshell), [mpfshell](https://github.com/wendlers/mpfshell) or [ampy](https://github.com/adafruit/ampy).
+<<<<<<< HEAD
 
 Create a directory `homie` on your device and copy the file `__init__.py` from the `homie` directory. Then create a `node` directory in `homie` and copy `__init__.py`, `led.py`, `simple.py` from the `homie/node` directory to the device.
 
+=======
+
+Create a directory `homie` on your device and copy the file `__init__.py` from the `homie` directory. Then create a `node` directory in `homie` and copy `__init__.py`, `led.py`, `simple.py` from the `homie/node` directory to the device.
+
+>>>>>>> master
 Your file system structure should now look similar like this:
 
 ```
@@ -28,7 +34,11 @@ Your file system structure should now look similar like this:
 
 ## Configuration
 
+<<<<<<< HEAD
 MicroHomie use a `settings.py` file to configure the device. An example `settings.py` file is in the example directory. Modify this file for your needs and copy it to your device root directory.
+=======
+MicroHomie use a `settings.py` file to configure the device. See `settings.example.py` as an example. Modify this file for your needs and copy it to your device root directory as `settings.py`.
+>>>>>>> master
 
 ## ESP8266 example device
 
@@ -61,17 +71,13 @@ In most cases you write your own node classes. But if you just want to test publ
 
 ```python
 import utime
+import settings
 
 from homie.node.simple import SimpleHomieNode
 from homie import HomieDevice
 
-CONFIG = {
-    'mqtt': {
-        'broker': '127.0.0.1',
-    },
-}
 
-homie = HomieDevice(CONFIG)
+homie = HomieDevice(settings)
 
 n = SimpleHomieNode(node_type=b'dummy', node_property=b'value', interval=5)
 n.value = 17
