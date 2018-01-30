@@ -61,17 +61,13 @@ In most cases you write your own node classes. But if you just want to test publ
 
 ```python
 import utime
+import settings
 
 from homie.node.simple import SimpleHomieNode
 from homie import HomieDevice
 
-CONFIG = {
-    'mqtt': {
-        'broker': '127.0.0.1',
-    },
-}
 
-homie = HomieDevice(CONFIG)
+homie = HomieDevice(settings)
 
 n = SimpleHomieNode(node_type=b'dummy', node_property=b'value', interval=5)
 n.value = 17
