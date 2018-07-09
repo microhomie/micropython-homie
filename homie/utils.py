@@ -47,6 +47,7 @@ def _wifi_connect():
         print('NETWORK: Connected, network config: %s' % repr(wlan.ifconfig()))
 
 def _eth_connect():
+    """Connects to Ethernet"""
     if not eth.isconnected():
         print('NETWORK: Activating ethernet...')
         eth.active(True)
@@ -70,9 +71,9 @@ else:
 
 def disable_ap():
     """Disables any Accesspoint"""
-    wlan = network.WLAN(network.AP_IF)
-    wlan.active(False)
-    print('NETWORK: Access Point disabled.')
+        wlan = network.WLAN(network.AP_IF)
+        wlan.active(False)
+        print('NETWORK: Access Point disabled.')
 
 
 def get_unique_id():
@@ -84,12 +85,18 @@ def get_unique_id():
 
 def get_local_ip():
     try:
-        return bytes(network.WLAN(0).ifconfig()[0], 'utf-8')
+        if settings.USE_ETHERNET:
+            return bytes(network.LAN(0).ifconfig()[0], 'utf-8')
+        else:
+            return bytes(network.WLAN(0).ifconfig()[0], 'utf-8')
     except:
         return b'127.0.0.1'
 
 
 def get_local_mac():
+    # NOTE:
+    #   There doesn't seem to be a way to obtain the ethernet's mac address
+    #   Instead, only WLAN mac is used.
     try:
         return ubinascii.hexlify(network.WLAN(0).config('mac'), ':')
     except:
