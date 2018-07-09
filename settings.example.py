@@ -1,4 +1,6 @@
 from homie.utils import get_unique_id
+from machine import Pin
+import network
 
 
 ###
@@ -10,6 +12,22 @@ WIFI_SSID = "YOUR_WIFI_SSID"
 
 # Password for the Wifi
 WIFI_PASSWORD = "YOUR_WIFI_PASSWORD"
+
+###
+# Ethernet settings
+###
+
+# Use ethernet instead of wifi?
+USE_ETHERNET = True
+
+ETHERNET_PHY = network.LAN(
+  id = None,
+  mdc = Pin(23),
+  mdio = Pin(18),
+  power = Pin(17),
+  phy_addr = 0,
+  phy_type = network.PHY_LAN8720
+)
 
 
 ###

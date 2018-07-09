@@ -40,13 +40,19 @@ class HomieDevice:
 
         # setup wifi
         utils.setup_network()
-        utils.wifi_connect()
+        self._network_connect()
 
         try:
             self._umqtt_connect()
         except:
             print('ERROR: can not connect to MQTT')
             # self.mqtt.publish = lambda topic, payload, retain, qos: None
+
+    def _network_connect(self):
+        if self.settings.USE_ETHERNET:
+            utils._eth_connect()
+        else:
+            utils.wifi_connect()
 
     def _umqtt_connect(self):
         # mqtt client
@@ -110,8 +116,8 @@ class HomieDevice:
                 self.topic_callbacks[topic](topic, message)
 
     def publish(self, topic, payload, retain=True, qos=1):
-        # try wifi reconnect in case it lost connection
-        utils.wifi_connect()
+        # try reconnect in case it lost connection
+        utils._network_connect()
 
         if not isinstance(payload, bytes):
             payload = bytes(str(payload), 'utf-8')

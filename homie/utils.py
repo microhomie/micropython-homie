@@ -8,6 +8,7 @@ PYCOM = ('FiPy', 'WiPy', 'LoPy', 'SiPy', 'GPy')
 
 wlan = None
 secret = None
+eth = None
 
 
 def _not_implemented():
@@ -17,17 +18,21 @@ def _not_implemented():
 
 def _setup_network():
     """Setup platform specific network settings"""
-    global wlan
-    global secret
-
-    if sys.platform in PYCOM:
-        # Update secret as tuple with wlan mode for PyCom port.
-        wlan = network.WLAN(network.WLAN.STA)
-        secret = (network.WLAN.WPA2, settings.WIFI_PASSWORD)
+    if settings.USE_ETHERNET:
+        global eth
+        eth = settings.ETHERNET_PHY
     else:
-        # default micropython wlan settings
-        wlan = network.WLAN(network.STA_IF)
-        secret = settings.WIFI_PASSWORD
+        global wlan
+        global secret
+
+        if sys.platform in PYCOM:
+            # Update secret as tuple with wlan mode for PyCom port.
+            wlan = network.WLAN(network.WLAN.STA)
+            secret = (network.WLAN.WPA2, settings.WIFI_PASSWORD)
+        else:
+            # default micropython wlan settings
+            wlan = network.WLAN(network.STA_IF)
+            secret = settings.WIFI_PASSWORD
 
 
 def _wifi_connect():
@@ -40,6 +45,15 @@ def _wifi_connect():
             print('NETWORK: waiting for connection...')
             utime.sleep(1)
         print('NETWORK: Connected, network config: %s' % repr(wlan.ifconfig()))
+
+def _eth_connect():
+    if not eth.isconnected():
+        print('NETWORK: Activating ethernet...')
+        eth.active(True)
+        while eth.ifconfig()[0][0] == '0':
+            print('NETWORK: waiting for connection...')
+            utime.sleep(1)
+        print('NETWORK: Connected, network config: %s' % repr(eth.ifconfig()))
 
 
 # Only import network and machine if we run on a device and map the
