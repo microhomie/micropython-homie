@@ -117,7 +117,7 @@ class HomieDevice:
 
     def publish(self, topic, payload, retain=True, qos=1):
         # try reconnect in case it lost connection
-        utils._network_connect()
+        self._network_connect()
 
         if not isinstance(payload, bytes):
             payload = bytes(str(payload), 'utf-8')
