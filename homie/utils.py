@@ -71,9 +71,9 @@ else:
 
 def disable_ap():
     """Disables any Accesspoint"""
-        wlan = network.WLAN(network.AP_IF)
-        wlan.active(False)
-        print('NETWORK: Access Point disabled.')
+    wlan = network.WLAN(network.AP_IF)
+    wlan.active(False)
+    print('NETWORK: Access Point disabled.')
 
 
 def get_unique_id():
