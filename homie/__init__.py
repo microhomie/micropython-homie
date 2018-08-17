@@ -5,7 +5,7 @@ from umqtt.simple import MQTTClient
 
 from homie import utils
 
-__version__ = b'0.1.2'
+__version__ = b'0.3.0'
 
 
 RETRY_DELAY = 10
@@ -140,24 +140,22 @@ class HomieDevice:
                         print('ERROR: cannot connect, {}'.format(str(e)))
                         utime.sleep(RETRY_DELAY)
 
+    def get_properties(self):
+        """device properties"""
+        yield Property(b'$homie', b'2.0.1', True)
+        yield Property(b'$online', b'true', True)
+        yield Property(b'$name', self.settings.DEVICE_NAME, True)
+        yield Property(b'$fw/name', self.settings.DEVICE_FW_NAME, True)
+        yield Property(b'$fw/version', __version__, True)
+        yield Property(b'$implementation', bytes(sys.platform, 'utf-8'), True)
+        yield Property(b'$localip', utils.get_local_ip(), True)
+        yield Property(b'$mac', utils.get_local_mac(), True)
+        yield Property(b'$stats/interval', self.stats_interval, True)
+        yield Property(b'$nodes', b','.join(self.node_ids), True)
+
     def publish_properties(self):
         """publish device and node properties"""
-        # node properties
-        properties = (
-            Property(b'$homie', b'2.0.1', True),
-            Property(b'$online', b'true', True),
-            Property(b'$name', self.settings.DEVICE_NAME, True),
-            Property(b'$fw/name', self.settings.DEVICE_FW_NAME, True),
-            Property(b'$fw/version', __version__, True),
-            Property(b'$implementation', bytes(sys.platform, 'utf-8'), True),
-            Property(b'$localip', utils.get_local_ip(), True),
-            Property(b'$mac', utils.get_local_mac(), True),
-            Property(b'$stats/interval', self.stats_interval, True),
-            Property(b'$nodes', b','.join(self.node_ids), True)
-        )
-
-        # publish all properties
-        for prop in properties:
+        for prop in self.get_properties():
             self.publish(*prop)
 
         # device properties

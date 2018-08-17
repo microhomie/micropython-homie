@@ -4,7 +4,7 @@ import sdist_upip
 
 setup(
     name='microhomie',
-    version='0.2.1',
+    version='0.3.0',
     description='MicroPython implementation of the Homie MQTT convention for IoT.',
     long_description=open('README.rst').read(),
     url='https://github.com/microhomie/microhomie',

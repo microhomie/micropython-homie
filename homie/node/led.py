@@ -12,24 +12,25 @@ class LED(HomieNode):
     def __init__(self, pin=2, interval=1):
         super().__init__(interval=interval)
         self.led = Pin(pin, Pin.OUT, value=0)
-        self.subscribe = [b'led/power/set']
         self.has_new_update = True
 
     def __str__(self):
         return 'LED status = {}'.format(ONOFF[self.led.value()])
 
+    @property
+    def subscribe(self):
+        yield b'led/power/set'
+
     def get_node_id(self):
         return [b'led']
 
     def get_properties(self):
-        return (
-            Property(b'led/$type', b'led', True),
-            Property(b'led/$properties', b'power', True),
-            Property(b'led/power/$settable', b'true', True),
-            Property(b'led/power/$name', b'LED', True),
-            Property(b'led/power/$datatype', b'string', True),
-            Property(b'led/power/$format', b'on,off', True)
-        )
+        yield Property(b'led/$type', b'led', True)
+        yield Property(b'led/$properties', b'power', True)
+        yield Property(b'led/power/$settable', b'true', True)
+        yield Property(b'led/power/$name', b'LED', True)
+        yield Property(b'led/power/$datatype', b'string', True)
+        yield Property(b'led/power/$format', b'on,off', True)
 
     def callback(self, topic, message):
         if message == b'toggle':
@@ -46,4 +47,4 @@ class LED(HomieNode):
         return False
 
     def get_data(self):
-        return (Property(b'led/power', ONOFF[self.led.value()], True),)
+        yield Property(b'led/power', ONOFF[self.led.value()], True)

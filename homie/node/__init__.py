@@ -6,7 +6,10 @@ class HomieNode(object):
     def __init__(self, interval=60):
         self.update_interval = interval
         self.next_update = utime.time()
-        self.subscribe = []
+
+    @property
+    def subscribe(self):
+        return ()
 
     def has_update(self):
         """Depending on the interval:
