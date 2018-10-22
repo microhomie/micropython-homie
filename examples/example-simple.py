@@ -2,22 +2,27 @@ import utime
 import settings
 
 from homie.node.simple import SimpleHomieNode
-from homie import HomieDevice
+from homie.device import HomieDevice
 
-homie = HomieDevice(settings)
 
-node = SimpleHomieNode("nodetype", "node_property")
+def main():
+    homie = HomieDevice(settings)
 
-homie.add_node(node)
+    node = SimpleHomieNode("nodetype", "node_property")
 
-# publish device and node properties
-homie.publish_properties()
+    homie.add_node(node)
 
-while True:
+    # publish device and node properties
+    homie.publish_properties()
 
-    # publish device data
-    homie.publish_data()
+    while True:
 
-    node.value = utime.time()
+        # publish device data
+        homie.publish_data()
 
-    utime.sleep(1)
+        node.value = utime.time()
+
+        utime.sleep(1)
+
+
+main()

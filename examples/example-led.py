@@ -13,22 +13,27 @@ import utime
 import settings
 
 from homie.node.led import LED
-from homie import HomieDevice
+from homie.device import HomieDevice
 
-homie = HomieDevice(settings)
 
-# Add LED node to device
-homie.add_node(LED(pin=2))
+def main():
+    homie = HomieDevice(settings)
 
-# publish device and node properties
-homie.publish_properties()
+    # Add LED node to device
+    homie.add_node(LED(pin=2))
 
-while True:
+    # publish device and node properties
+    homie.publish_properties()
 
-    # publish device data
-    homie.publish_data()
+    while True:
 
-    # check for new mqtt messages
-    homie.mqtt.check_msg()
+        # publish device data
+        homie.publish_data()
 
-    utime.sleep(1)
+        # check for new mqtt messages
+        homie.mqtt.check_msg()
+
+        utime.sleep(1)
+
+
+main()

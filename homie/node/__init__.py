@@ -1,11 +1,19 @@
-import utime
+from utime import time
 
 
 class HomieNode(object):
 
     def __init__(self, interval=60):
-        self.update_interval = interval
-        self.next_update = utime.time()
+        self.interval = interval
+        self.next_update = time()
+
+    def __repr__(self):
+        """Return this object as a reproducible string"""
+        raise NotImplementedError('not implemented')
+
+    def __str__(self):
+        """Return nice information about the object"""
+        raise NotImplementedError('not implemented')
 
     @property
     def subscribe(self):
@@ -17,15 +25,12 @@ class HomieNode(object):
         returns True if its time for an update,
         returns False if its not yet time for an update
         """
-        if utime.time() > self.next_update:
+        _time = time
+        if _time() > self.next_update:
             self.update_data()
-            self.next_update = utime.time() + self.update_interval
+            self.next_update = _time() + self.interval
             return True
         return False
-
-    def __str__(self):
-        """Print nice information about the object"""
-        raise NotImplementedError('not implemented')
 
     def get_node_id(self):
         """Return one ore more node ids as list"""
