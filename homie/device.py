@@ -1,3 +1,4 @@
+import gc
 import sys
 
 from utime import time, sleep
@@ -128,26 +129,23 @@ class HomieDevice:
                         print('ERROR: cannot connect, {}'.format(str(e)))
                         sleep(self.retry_delay)
 
-    def get_properties(self):
-        """device properties"""
-        yield (b'$homie', b'2.0.1')
-        yield (b'$online', b'true')
-        yield (b'$name', self.settings.DEVICE_NAME)
-        yield (b'$fw/name', self.settings.DEVICE_FW_NAME)
-        yield (b'$fw/version', __version__)
-        yield (b'$implementation', bytes(sys.platform, 'utf-8'))
-        yield (b'$localip', utils.get_local_ip())
-        yield (b'$mac', utils.get_local_mac())
-        yield (b'$stats/interval', self.stats_interval)
-        yield (b'$nodes', b','.join(self.node_ids))
-
     def publish_properties(self):
         """publish device and node properties"""
         publish = self.publish
-        for propertie in self.get_properties():
-            publish(*propertie)
 
         # device properties
+        publish(b'$homie', b'2.0.1')
+        publish(b'$online', b'true')
+        publish(b'$name', self.settings.DEVICE_NAME)
+        publish(b'$fw/name', self.settings.DEVICE_FW_NAME)
+        publish(b'$fw/version', __version__)
+        publish(b'$implementation', bytes(sys.platform, 'utf-8'))
+        publish(b'$localip', utils.get_local_ip())
+        publish(b'$mac', utils.get_local_mac())
+        publish(b'$stats/interval', self.stats_interval)
+        publish(b'$nodes', b','.join(self.node_ids))
+
+        # node properties
         for node in self.nodes:
             try:
                 for propertie in node.get_properties():
@@ -189,9 +187,9 @@ class HomieDevice:
     def start(self):
         """publish device and node properties, run forever"""
         self.publish_properties()
+        gc.collect()
 
         while True:
-
             if not utils.wlan.isconnected():
                 utils.wifi_connect()
 
