@@ -11,6 +11,7 @@ class HomieDevice:
     """MicroPython implementation of the Homie MQTT convention for IoT."""
 
     def __init__(self, settings):
+        self.mqtt = None
         self.errors = 0
         self.settings = settings
 
@@ -39,7 +40,6 @@ class HomieDevice:
             # self.mqtt.publish = lambda topic, payload, retain, qos: None
 
     def _umqtt_connect(self):
-        # mqtt client
         mqtt = MQTTClient(
             self.settings.DEVICE_ID,
             self.settings.MQTT_BROKER,
@@ -52,10 +52,7 @@ class HomieDevice:
 
         mqtt.DEBUG = True
 
-        # set callback
-        mqtt.set_callback(self.sub_cb)
-
-        # set last will testament
+        mqtt.set_callback(self.sub_cb)  # for all callbacks
         mqtt.set_last_will(self.topic + b'/$online', b'false',
                            retain=True, qos=1)
 
@@ -80,22 +77,21 @@ class HomieDevice:
             print('ERROR: getting Node')
 
         # subscribe node topics
-        btopic = self.topic
-        subscribe = self.mqtt.subscribe
+        base = self.topic
+        sub = self.mqtt.subscribe
         for topic in node.subscribe:
-            topic = b'/'.join((btopic, topic))
-            subscribe(topic)
+            sub('{}/{}'.format(base, topic))
             self.topic_callbacks[topic] = node.callback
 
     def sub_cb(self, topic, message):
         # device callbacks
         # print('MQTT SUBSCRIBE: {} --> {}'.format(topic, message))
 
-        if b'$stats/interval/set' in topic:
+        if b'/$stats/interval/set' in topic:
             self.stats_interval = int(message.decode())
             self.publish(b'$stats/interval', self.stats_interval, True)
             self.next_update = time() + self.stats_interval
-        elif b'$broadcast/#' in topic:
+        elif b'/$broadcast' in topic:
             for node in self.nodes:
                 node.broadcast(topic, message)
         else:
@@ -116,7 +112,7 @@ class HomieDevice:
                 # print('MQTT PUBLISH: {} --> {}'.format(t, payload))
                 self.mqtt.publish(t, payload, retain=retain, qos=1)
                 done = True
-            except Exception as e:
+            except Exception:
                 # some error during publishing
                 done = False
                 done_reconnect = False
@@ -189,3 +185,20 @@ class HomieDevice:
         self.errors += 1
         print('ERROR: during publish_data for node: {}'.format(node))
         print(error)
+
+    def start(self):
+        """publish device and node properties, run forever"""
+        self.publish_properties()
+
+        while True:
+
+            if not utils.wlan.isconnected():
+                utils.wifi_connect()
+
+            # publish device data
+            self.publish_data()
+
+            # check for new mqtt messages
+            self.mqtt.check_msg()
+
+            sleep(1)
