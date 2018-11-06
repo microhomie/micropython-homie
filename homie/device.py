@@ -11,8 +11,6 @@ class HomieDevice:
     """MicroPython implementation of the Homie MQTT convention for IoT."""
 
     def __init__(self, settings):
-        self.version = __version__
-
         self.errors = 0
         self.settings = settings
 
@@ -140,7 +138,7 @@ class HomieDevice:
         yield (b'$online', b'true', True)
         yield (b'$name', self.settings.DEVICE_NAME, True)
         yield (b'$fw/name', self.settings.DEVICE_FW_NAME, True)
-        yield (b'$fw/version', self.version, True)
+        yield (b'$fw/version', __version__, True)
         yield (b'$implementation', bytes(sys.platform, 'utf-8'), True)
         yield (b'$localip', utils.get_local_ip(), True)
         yield (b'$mac', utils.get_local_mac(), True)

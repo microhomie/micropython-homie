@@ -1,10 +1,12 @@
 from setuptools import setup
 import sdist_upip
 
+from homie import __version__
+
 
 setup(
     name='microhomie',
-    version='0.3.0',
+    version=__version__.decode(),
     description='MicroPython implementation of the Homie MQTT convention for IoT.',
     long_description=open('README.rst').read(),
     url='https://github.com/microhomie/microhomie',
