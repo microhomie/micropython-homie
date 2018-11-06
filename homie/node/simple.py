@@ -50,7 +50,7 @@ class SimpleHomieNode(HomieNode):
 
     def get_data(self):
         """returns the data value"""
-        yield (b"/".join([self.type, self.property]), self.value, True)
+        yield (b"{}/{}".format(self.type, self.property), self.value)
 
     def update_data(self):
         """nothing happens on update data"""
@@ -59,5 +59,5 @@ class SimpleHomieNode(HomieNode):
     def get_properties(self):
         """no special properties"""
         _type = self.type
-        yield (_type + b"/$type", _type, True)
-        yield (_type + b"/$properties", self.property, True)
+        yield (_type + b"/$type", _type)
+        yield (_type + b"/$properties", self.property)

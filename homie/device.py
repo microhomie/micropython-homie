@@ -89,7 +89,7 @@ class HomieDevice:
 
         if b'/$stats/interval/set' in topic:
             self.stats_interval = int(message.decode())
-            self.publish(b'$stats/interval', self.stats_interval, True)
+            self.publish(b'$stats/interval', self.stats_interval)
             self.next_update = time() + self.stats_interval
         elif b'/$broadcast' in topic:
             for node in self.nodes:
@@ -130,28 +130,28 @@ class HomieDevice:
 
     def get_properties(self):
         """device properties"""
-        yield (b'$homie', b'2.0.1', True)
-        yield (b'$online', b'true', True)
-        yield (b'$name', self.settings.DEVICE_NAME, True)
-        yield (b'$fw/name', self.settings.DEVICE_FW_NAME, True)
-        yield (b'$fw/version', __version__, True)
-        yield (b'$implementation', bytes(sys.platform, 'utf-8'), True)
-        yield (b'$localip', utils.get_local_ip(), True)
-        yield (b'$mac', utils.get_local_mac(), True)
-        yield (b'$stats/interval', self.stats_interval, True)
-        yield (b'$nodes', b','.join(self.node_ids), True)
+        yield (b'$homie', b'2.0.1')
+        yield (b'$online', b'true')
+        yield (b'$name', self.settings.DEVICE_NAME)
+        yield (b'$fw/name', self.settings.DEVICE_FW_NAME)
+        yield (b'$fw/version', __version__)
+        yield (b'$implementation', bytes(sys.platform, 'utf-8'))
+        yield (b'$localip', utils.get_local_ip())
+        yield (b'$mac', utils.get_local_mac())
+        yield (b'$stats/interval', self.stats_interval)
+        yield (b'$nodes', b','.join(self.node_ids))
 
     def publish_properties(self):
         """publish device and node properties"""
         publish = self.publish
-        for t, p, r in self.get_properties():
-            publish(t, p, r)
+        for propertie in self.get_properties():
+            publish(*propertie)
 
         # device properties
         for node in self.nodes:
             try:
-                for t, p, r in node.get_properties():
-                    publish(t, p, r)
+                for propertie in node.get_properties():
+                    publish(*propertie)
             except NotImplementedError:
                 raise
             except Exception as error:
@@ -166,8 +166,8 @@ class HomieDevice:
         for node in self.nodes:
             try:
                 if node.has_update():
-                    for t, p, r in node.get_data():
-                        publish(t, p, r)
+                    for data in node.get_data():
+                        publish(*data)
             except NotImplementedError:
                 raise
             except Exception as error:
@@ -177,7 +177,7 @@ class HomieDevice:
         _time = time
         if _time() > self.next_update:
             uptime = _time() - self.start_time
-            self.publish(b'$stats/uptime', uptime, True)
+            self.publish(b'$stats/uptime', uptime)
             # set next update
             self.next_update = _time() + self.stats_interval
 

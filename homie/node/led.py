@@ -30,12 +30,12 @@ class LED(HomieNode):
         return [b'led']
 
     def get_properties(self):
-        yield (b'led/$type', b'led', True)
-        yield (b'led/$properties', b'power', True)
-        yield (b'led/power/$settable', b'true', True)
-        yield (b'led/power/$name', b'LED', True)
-        yield (b'led/power/$datatype', b'string', True)
-        yield (b'led/power/$format', b'on,off', True)
+        yield (b'led/$type', b'led')
+        yield (b'led/$properties', b'power')
+        yield (b'led/power/$settable', b'true')
+        yield (b'led/power/$name', b'LED')
+        yield (b'led/power/$datatype', b'string')
+        yield (b'led/power/$format', b'on,off')
 
     def callback(self, topic, msg):
         if msg == b'toggle':
@@ -52,4 +52,4 @@ class LED(HomieNode):
         return False
 
     def get_data(self):
-        yield (b'led/power', ONOFF[self.led()], True)
+        yield (b'led/power', ONOFF[self.led()])
